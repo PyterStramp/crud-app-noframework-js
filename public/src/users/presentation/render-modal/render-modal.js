@@ -33,7 +33,6 @@ const setFormValues = (user) => {
     form.querySelector('[name="lastName"]').value = user.lastName;
     form.querySelector('[name="balance"]').value = user.balance;
     form.querySelector('[name="isActive"]').checked = user.isActive;
-
     loadedUser = user;
 }
 
@@ -62,9 +61,13 @@ export const renderModal = ( element, saveUserCallback ) => {
         event.preventDefault();
 
         const formData = new FormData( form );
-        
-        const userData = { ...loadedUser };
 
+        if (!formData.get('isActive')) {
+            formData.set('isActive', false);
+        }
+
+        const userData = { ...loadedUser };
+        
         for (const [key, value] of formData) {
             if ( key === 'balance' ) {
                 userData[ key ] = +value; //conversión
