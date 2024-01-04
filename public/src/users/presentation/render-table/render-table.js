@@ -1,4 +1,5 @@
 import usersStore from '../../store/users-store';
+import { deleteUser } from '../../use-cases/delete-user-by-id';
 import { showModal } from '../render-modal/render-modal';
 import './render-table.css';
 
@@ -38,6 +39,28 @@ const tableUserSelectListener = (event) => {
 
 /**
  * 
+ * @param {MouseEvent} event 
+ */
+const tableUserDeleteListener = async(event) => {
+    const element = event.target.closest('.delete-user');
+    if (!element) return;
+
+    const id = element.getAttribute('data-id');
+    try {
+        await deleteUser(id);
+        await usersStore.reloadPage();
+        document.querySelector('#current-page').innerText = usersStore.getCurrentPage();
+        renderTable();
+
+    }catch(error) {
+        console.log(error);
+        alert('No se pudo eliminar');
+    }
+    
+}
+
+/**
+ * 
  * @param {HTMLDivElement} element
  */
 export const renderTable = ( element ) => {
@@ -46,9 +69,9 @@ export const renderTable = ( element ) => {
     if (!table) {
         table = createTable();
         element.append( table );
-        //TODO Listeners
+        
         table.addEventListener('click', tableUserSelectListener);
-
+        table.addEventListener('click', tableUserDeleteListener);
     }
     let tableHTML = '';
     users.forEach( user => {
